@@ -13,6 +13,9 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     // iconfont js文件报错
-    'no-unused-expressions': 'off'
+    'no-unused-expressions': 'off',
+    'vue/multi-word-component-names': 'off',
+    // 函数前面加空格
+    'space-before-function-paren': 'off'
   }
 }
