@@ -6,10 +6,10 @@
 </template>
 
 <script>
-import request from '@/utils/request.js'
+// import request from '@/utils/request.js'
 export default {
   created() {
-    console.dir(request)
+    // console.dir(request)
   }
 }
 </script>
