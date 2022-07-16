@@ -64,9 +64,9 @@ export default {
       isShow: false
     }
   },
-  created() {
-    console.log(this)
-  },
+  // created() {
+  //   console.log(this)
+  // },
   methods: {
     // 返回上一步
     backToPrePage() {

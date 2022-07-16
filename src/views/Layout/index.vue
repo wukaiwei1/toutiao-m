@@ -26,7 +26,9 @@
       <van-tabbar-item to="/profile">
         <template #icon>
           <i class="iconfont icon-wode"></i>
-          <p class="text">我的</p>
+          <p class="text">
+            {{ !!$store.state.user.token ? '我的' : '未登录' }}
+          </p>
         </template>
       </van-tabbar-item>
     </van-tabbar>
@@ -40,12 +42,15 @@ export default {}
 <style scoped lang="less">
 .van-tabbar-item {
   line-height: 1.5;
-  .van-tabbar-item__icon {
+  :deep(.van-tabbar-item__icon) {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    align-items: space-evenly;
+    // align-items: space-evenly;
     height: 100%;
     margin: 0;
+
     .text {
       margin: 0;
       font-size: 0.32rem;
