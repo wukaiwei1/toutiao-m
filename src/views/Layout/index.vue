@@ -2,7 +2,7 @@
   <div>
     <!-- 二级路由出口 -->
     <router-view></router-view>
-    <van-tabbar route>
+    <van-tabbar route >
       <van-tabbar-item to="/ ">
         <template #icon>
           <i class="iconfont icon-shouye"></i>

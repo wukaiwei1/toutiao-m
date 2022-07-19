@@ -12,6 +12,7 @@ export default new Vuex.Store({
   // 方法
   mutations: {
     setUser(state, payload) {
+      // console.log(payload)
       state.user = payload
       SetToken(payload)
     }
