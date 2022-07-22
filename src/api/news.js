@@ -16,3 +16,16 @@ export const getArticleList = (channelId, timestamp) => {
     }
   })
 }
+
+// 获取新闻详情
+/**
+ *
+ * @param {String|Number} id 文章IP
+ * @returns promise
+ */
+
+export const getArticleInfo = (id) => {
+  return request({
+    url: `/v1_0/articles/${id}`
+  })
+}

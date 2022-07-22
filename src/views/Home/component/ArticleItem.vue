@@ -5,6 +5,7 @@
       v-if="articleInfo.cover.type === 0"
       :title="articleInfo.title"
       :label="articleDacs"
+      @click="getArticleFn"
     />
 
     <!-- 渲染一张图片的文章 -->
@@ -12,6 +13,7 @@
       v-if="articleInfo.cover.type === 1"
       :title="articleInfo.title"
       :label="articleDacs"
+      @click="getArticleFn"
     >
       <van-image
         width="3rem"
@@ -25,6 +27,7 @@
       v-if="articleInfo.cover.type === 3"
       :title="articleInfo.title"
       :label="articleDacs"
+      @click="getArticleFn"
     >
       <template #label>
         <!-- 图片内容 -->
@@ -58,6 +61,12 @@ export default {
       const art = this.articleInfo
       const time = dayjs(art.pubdate).fromNow()
       return `${art.aut_name} ${art.comm_count}评论 ${time}`
+    }
+  },
+  methods: {
+    // 获取文章详情
+    getArticleFn() {
+      this.$emit('getArtInfo')
     }
   }
 }

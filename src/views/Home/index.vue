@@ -3,7 +3,7 @@
     <!-- 头部导航 -->
     <van-nav-bar class="navbar">
       <template #title>
-        <van-button round>
+        <van-button round @click="$router.push('/search')">
           <van-icon name="search"></van-icon>
           搜索
         </van-button>
@@ -108,6 +108,7 @@ export default {
       if (!this.isLogin) {
         setMyChannelsToLocal(this.channels)
       } else {
+        console.log(mychannels)
         // 登录状态
         try {
           await addmyChannel(mychannels.id, this.channels.length)

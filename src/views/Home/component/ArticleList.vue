@@ -20,8 +20,10 @@
           v-for="item in articles"
           :key="item.art_id"
           :articleInfo="item"
-        ></getArticleItem> </van-list
-    ></van-pull-refresh>
+          @getArtInfo="getArticleFn(item.art_id)"
+        ></getArticleItem>
+      </van-list>
+    </van-pull-refresh>
   </div>
 </template>
 
@@ -63,6 +65,7 @@ export default {
         const { data } = await getArticleList(this.id, Date.now())
         // 保存文章数据
         this.articles = data.data.results
+        console.log(this.articles)
         // 时间戳
         this.pre_timestamp = data.data.pre_timestamp
       } catch (error) {
@@ -102,6 +105,14 @@ export default {
         this.loading = false
         this.refreshLoading = false
       }
+    },
+    // 文章详情
+    getArticleFn(id) {
+      // 跳转文章详情页
+      this.$router.push({
+        path: '/article',
+        query: { id }
+      })
     }
   }
 }

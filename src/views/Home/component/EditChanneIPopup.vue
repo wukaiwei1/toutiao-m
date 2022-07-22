@@ -62,7 +62,7 @@ export default {
   },
   data() {
     return {
-      isShow: true,
+      isShow: false,
       allchannels: [],
       isEdit: false
     }
