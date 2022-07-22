@@ -10,12 +10,32 @@
         </div>
         <div class="commentTime">
           <span>{{ pubdate || '暂无' }}</span>
-          <van-button class="huifuBtn">回复0</van-button>
+          <van-button class="huifuBtn" @click="showPopUp = true"
+            >回复{{ commentList.reply_count }}
+          </van-button>
+          <van-popup
+            v-model="showPopUp"
+            :style="{ height: '100%', width: '100%' }"
+            position="bottom"
+            closeable
+            close-icon-position="top-left"
+          >
+            <popup
+              :commentList="commentList"
+              :num="commentList.reply_count"
+              :id="commentList.com_id"
+            ></popup>
+          </van-popup>
         </div>
       </template>
       <template #default>
-        <van-icon name="good-job-o" />
-        <span>赞</span>
+        <van-icon
+          :class="{ liveIcon: commentList.is_liking === true }"
+          name="good-job-o"
+          :ref="commentList.com_id"
+          :badge="praise ? praise : ''"
+        />
+        <span @click="likeFn(commentList.com_id)" class="praise"> 赞</span>
       </template>
     </van-cell>
   </van-cell-group>
@@ -23,22 +43,63 @@
 
 <script>
 import dayjs from '@/utils/dayjs'
-
+import popup from './PopUp'
+import { getcommentGoods, setcommentGoods } from '@/api'
 export default {
   name: 'sareItem',
+  data() {
+    return {
+      showPopUp: false,
+      id: '',
+      isLiking: ''
+    }
+  },
   props: {
     commentList: {
       type: Object
     }
   },
-  created() {
-    console.log(this.commentList)
+  components: {
+    popup
   },
   computed: {
+    // 计算时间
     pubdate() {
       const art = this.commentList
       const time = dayjs(art.pubdate).fromNow()
       return time
+    },
+    praise() {
+      return this.commentList.like_count
+    }
+  },
+  methods: {
+    // 点赞
+    async likeFn(id) {
+      this.id = id
+      const name = this.$refs[id].className
+      if (name === 'van-icon van-icon-good-job-o') {
+        try {
+          await getcommentGoods(id)
+          this.$refs[id].className = 'van-icon van-icon-good-job-o liveIcon'
+          // 点赞成功提示
+          this.$toast.success('点赞成功')
+          this.commentList.like_count++
+        } catch (error) {
+          console.log(error)
+        }
+      } else {
+        // 取消点赞
+        try {
+          await setcommentGoods(id)
+          this.$refs[id].className = 'van-icon van-icon-good-job-o'
+          // 取消点赞提示
+          this.$toast('点赞取消')
+          this.commentList.like_count ? this.commentList.like_count-- : 0
+        } catch (error) {
+          console.log(error)
+        }
+      }
     }
   }
 }
@@ -91,5 +152,14 @@ export default {
   display: flex;
   align-items: center;
   color: #333;
+}
+.liveIcon {
+  color: gold;
+}
+:deep( .van-cell__value) {
+  padding-top: 30px;
+  .praise {
+    padding-left: 10px;
+  }
 }
 </style>

@@ -40,7 +40,7 @@ const routes = [
   // 文章详情
   {
     path: '/article',
-    component: () => import('@/views/Article')
+    component: () => import('@/views/Article/index.vue')
   }
 ]
 

@@ -29,3 +29,27 @@ export const getArticleInfo = (id) => {
     url: `/v1_0/articles/${id}`
   })
 }
+
+// 点赞文章
+export const getLikeArticle = (target) => {
+  return request({
+    url: '/v1_0/article/likings',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: { target }
+  })
+}
+
+// 取消对文章点赞
+
+export const offLikeArticle = (target) => {
+  return request({
+    url: `/v1_0/article/likings/${target}`,
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}

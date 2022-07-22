@@ -30,3 +30,29 @@ export const getUserInfo = () => {
     url: '/v1_0/user'
   })
 }
+
+// 关注用户
+
+export const getConcern = (target) => {
+  return request({
+    url: '/v1_0/user/followings',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: {
+      target
+    }
+  })
+}
+
+// 取消关注用户
+export const offConcern = (target) => {
+  return request({
+    url: `/v1_0/user/followings/${target}`,
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}

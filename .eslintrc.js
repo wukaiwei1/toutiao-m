@@ -16,6 +16,7 @@ module.exports = {
     'no-unused-expressions': 'off',
     'vue/multi-word-component-names': 'off',
     // 函数前面加空格
-    'space-before-function-paren': 'off'
+    'space-before-function-paren': 'off',
+    'vue/no-mutating-props': 'off'
   }
 }

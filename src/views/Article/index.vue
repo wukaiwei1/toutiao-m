@@ -23,15 +23,17 @@
           </van-col>
           <van-col span="10">
             <van-button
-              :loading="loading"
+              :loading="Btnloading"
               round
               size="small"
               type="info"
               class="attentionBtn"
               @click="attentionFn"
             >
-              <template #icon> <van-icon name="plus" /> </template>
-              关注
+              <template #icon>
+                <van-icon :name="isFollowed ? 'success' : 'plus'" />
+              </template>
+              {{ isFollowed ? '已关注' : '关注' }}
             </van-button>
           </van-col>
         </van-row>
@@ -48,10 +50,11 @@
       <!-- 评论 -->
       <div class="comment">
         <van-list
-          v-model="Listloading"
+          v-model="loading"
           :finished="finished"
           finished-text="没有更多了"
           @load="onLoad"
+          offset="50"
         >
           <getCommentItem
             v-for="(item, index) in commentList"
@@ -63,30 +66,84 @@
     </div>
     <!-- 底部功能按钮 -->
     <van-tabbar class="bottomBtn">
-      <van-tabbar-item class="pinglunBtn">写评论</van-tabbar-item
-      ><van-tabbar-item icon="comment-o" />
-      <van-tabbar-item icon="star-o" />
-      <van-tabbar-item icon="good-job-o" />
+      <van-tabbar-item class="pinglunBtn" @click="isShowPopUp"
+        >写评论</van-tabbar-item
+      >
+      <van-popup v-model="showPop" position="bottom" :style="{ height: '20%' }"
+        ><van-field
+          v-model="message"
+          rows="2"
+          autosize
+          type="textarea"
+          maxlength="50"
+          placeholder="请输入留言"
+          show-word-limit
+        >
+          <template #extra
+            ><span class="release" @click.enter="releaseFn">发布</span>
+          </template>
+        </van-field>
+      </van-popup>
+      <van-tabbar-item icon="comment-o" :badge="total_count" />
+      <van-tabbar-item
+        icon="star"
+        @click="getCollection"
+        :class="{ liveArticle: isCollected === true }"
+      />
+      <van-tabbar-item
+        icon="good-job"
+        @click="getLikeArticle"
+        :class="{ goodLive: attitude === 1 }"
+      />
       <van-tabbar-item icon="share" />
     </van-tabbar>
   </div>
 </template>
 
 <script>
-import { getArticleInfo, getArtistComment } from '@/api'
+import {
+  getArticleInfo,
+  getArtistComment,
+  getCollection,
+  offCollection,
+  getConcern,
+  offConcern,
+  getLikeArticle,
+  offLikeArticle,
+  partFive
+} from '@/api'
 import getCommentItem from './components/commentsItem.vue'
 import dayjs from '@/utils/dayjs'
 import '@/assets/css/news.css'
+
 export default {
   name: 'attentionFn',
   data() {
     return {
+      // 文章信息
       ArticleInfo: {},
+      Btnloading: false,
       loading: false,
-      Listloading: false,
       finished: false,
+      // 文章id
       id: '',
-      commentList: []
+      // 用户的id
+      autId: '',
+      commentList: [],
+      // 点赞的Id
+      lastId: '',
+      // 评论的数量
+      total_count: '',
+      // 是否收藏文章
+      isCollected: '',
+      // 是否关注作者
+      isFollowed: '',
+      // 是否对文章点赞
+      attitude: '',
+      // 发布评论弹框
+      showPop: false,
+      // 评论信息
+      message: ''
     }
   },
   created() {
@@ -99,30 +156,129 @@ export default {
     getCommentItem
   },
   methods: {
+    // 显示发布弹框
+    isShowPopUp() {
+      this.showPop = true
+    },
+    // 发布评论
+    async releaseFn() {
+      try {
+        await partFive(this.id, this.message)
+        // 添加提示
+        this.$toast.success('评论成功')
+        this.showPop = false
+        // 获取文章评论
+        this.getArtistComment()
+      } catch (error) {
+        console.log(error)
+        this.$toast('请登录后或稍后重试')
+      }
+    },
+    // 获取文章评论
     async getArtistComment() {
       const {
         data: { data }
       } = await getArtistComment('a', this.id)
+      console.log(data)
+      // 最后一个评论的id，用于请求下一页数据
+      this.lastId = data.last_id
+      // 评论数据
       this.commentList = data.results
+      // 评论数量
+      this.total_count = data.total_count
     },
     // 评论触底事件
-    onLoad() {
-      this.finished = true
-      console.log('触底')
+    async onLoad() {
+      try {
+        const {
+          data: { data }
+        } = await getArtistComment('a', this.id, this.lastId)
+        this.commentList.push(...data.results)
+        this.lastId = data.last_id
+        if (!this.lastId) {
+          this.finished = true
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.loading = false
+      }
     },
     //   返回上一页
     onBackfn() {
       this.$router.back()
     },
-    // 点击关注
-    attentionFn() {
+    // 点击关注作者
+    async attentionFn() {
       // 点击改为加载状态
-      this.loading = true
+      this.Btnloading = true
+      if (!this.isFollowed) {
+        try {
+          // 关注
+          const { data } = await getConcern(this.autId)
+          console.log(data)
+          this.Btnloading = false
+          this.isFollowed = true
+        } catch (error) {}
+      } else {
+        try {
+          // 取消
+          const { data } = await offConcern(this.autId)
+          console.log(data)
+          this.Btnloading = false
+          this.isFollowed = false
+        } catch (error) {}
+      }
     },
+    // 对文章点赞
+    async getLikeArticle() {
+      console.log(123456)
+      if (this.attitude === -1 || this.attitude === 0) {
+        const { data } = await getLikeArticle(this.id)
+        console.log(data)
+        // 添加提示
+        this.$toast.success('点赞成功')
+        this.attitude = 1
+      } else {
+        const { data } = await offLikeArticle(this.id)
+        console.log(data)
+        // 取消点赞提示
+        this.$toast('取消点赞')
+        this.attitude = -1
+      }
+    },
+    // 获取文章数据
     async getArticleList() {
       this.id = this.$route.query.id
       const { data } = await getArticleInfo(this.id)
+      // 是否收藏
+      this.isCollected = data.data.is_collected
+      // 是否关注作者
+      this.isFollowed = data.data.is_followed
+      // 用户的id
+      this.autId = data.data.aut_id
+      // 是否对文章点赞
+      this.attitude = data.data.attitude
+      // 文章数据
       this.ArticleInfo = data.data
+      console.log(this.ArticleInfo)
+    },
+    // 收藏OR取消收藏文章
+    async getCollection() {
+      // 判断是否收藏
+      if (this.isCollected) {
+        // 取消收藏
+        await offCollection(this.id)
+        this.isCollected = false
+        // 取消收藏提示
+        this.$toast('取消收藏')
+      } else {
+        // 添加收藏
+        await getCollection(this.id)
+        this.isCollected = true
+        // 添加提示
+        this.$toast.success('收藏成功')
+      }
     }
   },
   computed: {
@@ -282,5 +438,25 @@ export default {
   // :deep(.van-tabbar-item__text) {
   //   border: 0;
   // }
+}
+.liveArticle {
+  color: pink;
+}
+.goodLive {
+  color: red;
+}
+
+// 弹框
+:deep(.van-field .van-cell__value) {
+  margin-top: 28px;
+  margin-right: 60px;
+  padding: 20px 20px 0 32px;
+  height: 160px;
+
+  background-color: #f5f7f9;
+}
+:deep(.release) {
+  line-height: 8;
+  color: #258292;
 }
 </style>
