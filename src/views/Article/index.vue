@@ -42,6 +42,7 @@
       <div
         class="article-content markdown-body articleIN"
         v-html="ArticleInfo.content"
+        ref="contentText"
       ></div>
       <!-- 正文结束 -->
       <div class="endText">
@@ -115,6 +116,7 @@ import {
 import getCommentItem from './components/commentsItem.vue'
 import dayjs from '@/utils/dayjs'
 import '@/assets/css/news.css'
+import { ImagePreview } from 'vant'
 
 export default {
   name: 'attentionFn',
@@ -264,8 +266,23 @@ export default {
       // 文章数据
       this.ArticleInfo = data.data
       // 图片预览
-      this.$nextTick(() => {})
-      console.log(this.ArticleInfo)
+      this.$nextTick(() => {
+        // getElementById动态获取出的所有的img元素
+        this.imgList = this.$refs.contentText.querySelectorAll('img')
+        console.log(this.imgList) // 声明空数组---vant组件使用
+        const imgSrc = []
+        this.imgList.forEach((item, index) => {
+          // 将每一个img的src 路径存到空数组
+          imgSrc.push(item.src) // 给每一个img元素绑定点击事件触发预览
+          item.addEventListener('click', () => {
+            ImagePreview({
+              images: imgSrc,
+              closeable: true,
+              startPosition: index
+            })
+          })
+        })
+      })
     },
     // 收藏OR取消收藏文章
     async getCollection() {
