@@ -167,6 +167,8 @@ export default {
         // 添加提示
         this.$toast.success('评论成功')
         this.showPop = false
+        // 清空
+        this.message = ''
         // 获取文章评论
         this.getArtistComment()
       } catch (error) {
@@ -261,6 +263,8 @@ export default {
       this.attitude = data.data.attitude
       // 文章数据
       this.ArticleInfo = data.data
+      // 图片预览
+      this.$nextTick(() => {})
       console.log(this.ArticleInfo)
     },
     // 收藏OR取消收藏文章

@@ -41,6 +41,11 @@ const routes = [
   {
     path: '/article',
     component: () => import('@/views/Article/index.vue')
+  },
+  // 用户编辑
+  {
+    path: '/userEdit',
+    component: () => import('@/views/userEdit')
   }
 ]
 

@@ -22,7 +22,11 @@
           </van-col>
           <van-col span="11">
             <van-row class="code-row" type="flex" align="center" justify="end">
-              <van-button class="code-btn" round size="mini"
+              <van-button
+                class="code-btn"
+                round
+                size="mini"
+                @click="$router.push('/userEdit')"
                 >编辑资料</van-button
               >
             </van-row>

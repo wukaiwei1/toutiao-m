@@ -56,3 +56,37 @@ export const offConcern = (target) => {
     }
   })
 }
+
+// 获取用户个人资料
+export const getuserMessage = () => {
+  return request({
+    url: '/v1_0/user/profile'
+  })
+}
+
+// 编辑个人资料
+
+export const setUserMessage = (userinfo) => {
+  return request({
+    url: '/v1_0/user/profile',
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: {
+      ...userinfo
+    }
+  })
+}
+
+// 编辑用户头像
+export const getuserPic = (photo) => {
+  return request({
+    url: '/v1_0/user/photo',
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    data: photo
+  })
+}
