@@ -152,7 +152,7 @@ export default {
     //  获取文章数据
     this.getArticleList()
     // 获取文章评论
-    this.getArtistComment()
+    // this.getArtistComment()
   },
   components: {
     getCommentItem
@@ -197,11 +197,14 @@ export default {
         const {
           data: { data }
         } = await getArtistComment('a', this.id, this.lastId)
-        this.commentList.push(...data.results)
         this.lastId = data.last_id
         if (!this.lastId) {
           this.finished = true
         }
+        this.commentList.push(...data.results)
+        // if (data.results.length < 10) {
+        //   return
+        // }
       } catch (error) {
         console.log(error)
       } finally {
